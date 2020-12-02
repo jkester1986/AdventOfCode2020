@@ -3,8 +3,7 @@ fs.readFile('Day2.txt', 'utf8', function (err, data) {
 	if (err) {
 		return console.log(err);
 	}
-	let lines = data;
-	lines = lines.split('\n');
+	let lines = data.split('\n');
 	let count = 0,
 		count2 = 0;
 	
