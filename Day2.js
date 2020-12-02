@@ -9,20 +9,16 @@ fs.readFile('Day2.txt', 'utf8', function (err, data) {
 		count2 = 0;
 	
 	lines.forEach(line => {
-		let info = line.split(' ');
-		let range = info[0].split('-');
-		let min = parseInt(range[0]), // discovered today I don't need parseInt...bc...reasons? *shrug*. Kept for clarity though
-			max = parseInt(range[1]),
-			letter = info[1].charAt(0),
-			pw = info[2];
+		let groups = /^(\d+)-(\d+)\s(\w):\s(.+)/.exec(line);
+		let min = parseInt(groups[1]), // discovered today I don't need parseInt...bc...reasons? *shrug*. Kept for clarity though
+			max = parseInt(groups[2]),
+			letter = groups[3],
+			pw = groups[4];
 
-		if(pw.split(letter).length-1 >= min && pw.split(letter).length-1 <=max ) {
+		if(pw.split(letter).length-1 >= min && pw.split(letter).length-1 <=max )
 			count++;
-		}
 
-		if((pw.charAt(min-1) == letter || pw.charAt(max-1) == letter)
-			&& !(pw.charAt(min-1) == letter && pw.charAt(max-1) == letter)
-		)
+		if((pw.charAt(min-1) == letter) != (pw.charAt(max-1) == letter))
 			count2++;
 	});
 
