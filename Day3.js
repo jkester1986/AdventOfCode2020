@@ -4,8 +4,6 @@ fs.readFile('Day3.txt', 'utf8', function (err, data) {
 		return console.log(err);
 	}
 	let lines = data.split('\n');
-	let count = 0,
-		count2 = 0;
 
 	let lineLength = lines[0].length;
 	let length = lines.length;
