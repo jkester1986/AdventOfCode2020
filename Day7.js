@@ -55,27 +55,23 @@ fs.readFile('Day7.txt', 'utf8', function (err, data) {
 	}
 	findAllContainingBags("shinygold");
 
-	// console.log(bagRules);
-	console.log();
+	console.log("P1:", Object.keys(containGold).length);
 
-	console.log(Object.keys(containGold).length);
+	function findBagsInside(containerBag) { //TODO: add multipler?
+		let containedBags = bagRules[`${containerBag}`].bagsContained;
+		
+		if (containedBags.length === 0) {
+			return 0;
+		}
 
+		let sum = 0;
+		containedBags.forEach(containedBag => {
+			// multiply the number of bags by the number of bags being contained.
+			// Be sure to add 1 for the containing bag
+			sum += containedBag.count * (findBagsInside(containedBag.bagColor) + 1);
+		})
+		return sum;
+	}
 
-	// function findBagsInside(containerBag) { //TODO: add multipler?
-	// 	console.log("CONTAINER BAG:", bagRules[`${containerBag}`]);
-	// 	let containedBags = bagRules[`${containerBag}`].bagsContained,
-	// 		length = containedBags.length;
-	// 	if (containedBags.length === 0) {
-	// 		return 1;
-	// 	}
-
-	// 	let sum = 0;
-	// 	console.log({length});
-	// 	for (let i = 0; i < length; i++) {
-	// 		sum += containedBags[i].count * findBagsInside(containedBags[i].bagColor);
-	// 	}
-	// 	return sum;
-	// }
-
-	// console.log("bags inside:", findBagsInside("shinygold"));
+	console.log("P2:", findBagsInside("shinygold"));
 });
