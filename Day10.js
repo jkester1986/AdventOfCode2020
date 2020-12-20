@@ -1,4 +1,6 @@
 fs = require('fs');
+memoize = require('lodash.memoize');
+
 fs.readFile('Day10.txt', 'utf8', function (err, data) {
 	if (err) {
 		return console.log(err);
@@ -31,34 +33,16 @@ fs.readFile('Day10.txt', 'utf8', function (err, data) {
 	}
 
 	console.log("P1:", joltDiff1 * joltDiff3);
-	console.log("jolts:", joltDiff1 + joltDiff3);
 
-	let count = 1;
-	function combinations(val) {
-		if (val === values[length-1]) return count++;
+	const combinations = memoize(val => {
+		let count = 0;
+		if (val === values[length-1]) return 1;
 
 		tree[val].forEach(newVal => {
-			combinations(newVal);
+			count += combinations(newVal);
 		});
-	}
-	combinations(0);
 
-	// function combinations(index) {
-	// 	if( index === 0 || values[index] - values[index-1] <= 3) { //1
-	// 			if ( index === length - 1) return 1;
-	// 			if ( values[index + 3] && values[index + 3] - values[index] <=3) { // 6 - 1
-	// 				return combinations(index + 1) + combinations(index + 2) + combinations(index + 3);
-	// 			}
-	// 			else if ( values[index + 2] && values[index + 2] - values[index] <=3) { // 4 - 1
-	// 				return combinations(index + 1) + combinations(index + 2);
-	// 			}
-	// 			else if ( values[index + 1] && values[index + 1] - values[index] <=3) {
-	// 				return combinations(index + 1);
-	// 			}
-	// 	}
-	// 	else return 0;
-	// }
-
-	console.log(count);
-
+		return count;
+	});
+	console.log("P2:", combinations(0));
 });
