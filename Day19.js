@@ -28,9 +28,12 @@ fs.readFile('Day19.txt', 'utf8', function (err, data) {
 				let ruleString = '';
 				let subRules = rule[0].trim().split(' ');
 				subRules.forEach(subRule => {
-					ruleString += findPattern(subRule);
+					if (ruleKey === '11')
+						ruleString += findPattern(subRule) + `{1}`;
+					else
+						ruleString += findPattern(subRule);
 				});
-
+				if (ruleKey === '8') ruleString += '+';
 				return ruleString;
 			}
 		}
@@ -57,21 +60,35 @@ fs.readFile('Day19.txt', 'utf8', function (err, data) {
 
 	let rulesParsed = new Map();
 	
-	// match at least once, with any number of repeats
-	// rulesParsed.set('8', new RegExp('((a(((((ab|bb)b|aba)a|((a|b)(a|b)a|(b(a|b)|aa)b)b)b|((a(ba|bb)|b(a|b)(a|b))a|(a(ba|aa)|b(a|b)(a|b))b)a)b|(b((b(ba|bb)|aab)b|(b(b(a|b)|aa)|aab)a)|a(b(b(a|b)(a|b)|a(b(a|b)|aa))|a(aab|(ba|aa)a)))a)|b((b(b(baa|aba)|a(b(ab|bb)|a(bb|aa)))|a((bba|(b(a|b)|aa)b)b|(b(b(a|b)|aa)|a(ba|bb))a))a|(a(((ba|aa)b|aba)b|(aab|(ab|bb)a)a)|b(b((ab|ba)a|(ba|bb)b)|a((ba|aa)a|(ba|bb)b)))b))a|((((((ba|aa)b|aba)a|(b(bb|aa)|a(a|b)(a|b))b)b|(a((ba|aa)a|(ba|a(a|b))b)|b((bb|aa)b|baa))a)a|(a(((a(a|b)|bb)a|(a|b)(a|b)b)a|(aaa|b(ba|aa))b)|b(aaba|b(a(ba|aa)|b(b(a|b)|aa))))b)a|(((((ba|bb)b|(bb|aa)a)a|(bab|a(ab|bb))b)b|(a((aa|ab)b|(ab|bb)a)|b(a|b)(a(a|b)|bb))a)a|(a(baab|(baa|bbb)a)|b(((bb|aa)b|baa)a|(bab|a(b(a|b)|aa))b))b)b)b)+'));
-	// rulesParsed.
-	
 	for ( let [key, _] of rules.entries()) {
-		// if (key !== '8' && key !== '11')
-			rulesParsed.set(key, new RegExp('^' + findPattern(key) + '$'));
+		rulesParsed.set(key, new RegExp('^' + findPattern(key) + '$'));
 	}
 
-	let matches = 0;
-	messages.forEach(message => {
-		if (rulesParsed.get('0').exec(message))
-			matches++;
-	});
+	let matches = 0,
+		failedMessages = [],
+		iterations = 1;
 
-	console.log("P1:", matches);
+	while (iterations <= 5) { // this was 10, but now I know I only need 5 after I got my answer
+		if (failedMessages.length !== 0)
+			messages = [...failedMessages];
+
+		failedMessages = [];
+
+		if (iterations > 1) {
+			let rule0 = rulesParsed.get('0').toString().replace(new RegExp(`${iterations - 1}`, "g"), iterations);
+			rule0 = rule0.slice(1, rule0.length - 1);
+			rulesParsed.set('0', new RegExp(rule0));
+		}
+
+		messages.forEach(message => {
+			if (rulesParsed.get('0').exec(message))
+				matches++;
+			else failedMessages.push(message);
+		});
+
+		iterations++;
+	}
+
+	console.log("P2:", matches);
 
 });
