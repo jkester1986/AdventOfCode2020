@@ -9,23 +9,25 @@ fs.readFile('Day17.txt', 'utf8', function (err, data) {
 	lines.forEach((line, y) => {
 		let chars = line.split('');
 		chars.forEach((char, x) => {
-			startingCube.set(`x${x}y${y}z0`, char);
+			startingCube.set(`x${x}y${y}z0w0`, char);
 		});
 	});
 
-	function getCount(x, y, z) {
+	function getCount(x, y, z, w) {
 		let count = 0;
 
-		for (let zPrime = z-1; zPrime <= z + 1; zPrime++) {
-			for (let yPrime = y - 1; yPrime <= y + 1; yPrime++) {
-				for (let xPrime = x - 1; xPrime <= x + 1; xPrime++) {
-					if ( z === zPrime && y === yPrime && x === xPrime) {
-						// console.log(`x${xPrime}y${yPrime}z${zPrime} is empty`);
-					}
-					else {
-						if (startingCube.get(`x${xPrime}y${yPrime}z${zPrime}`) === '#') {
-							count++;
-							if (count > 3) return count;
+		for (let wPrime = w-1; wPrime <= w + 1; wPrime++) {
+			for (let zPrime = z-1; zPrime <= z + 1; zPrime++) {
+				for (let yPrime = y - 1; yPrime <= y + 1; yPrime++) {
+					for (let xPrime = x - 1; xPrime <= x + 1; xPrime++) {
+						if ( z === zPrime && y === yPrime && x === xPrime && w === wPrime) {
+							// do nothing, this is the cube we are deciding to toggle
+						}
+						else {
+							if (startingCube.get(`x${xPrime}y${yPrime}z${zPrime}w${wPrime}`) === '#') {
+								count++;
+								if (count > 3) return count;
+							}
 						}
 					}
 				}
@@ -35,13 +37,13 @@ fs.readFile('Day17.txt', 'utf8', function (err, data) {
 		return count;
 	}
 
-	function isShuttingOff(x, y, z) {
-		let count = getCount(x, y, z);
+	function isShuttingOff(x, y, z, w) {
+		let count = getCount(x, y, z, w);
 		return count !== 2 && count !== 3; // turns off if count is not 2 or 3
 	}
 
-	function isTurningOn(x, y, z) {
-		let count = getCount(x, y, z);
+	function isTurningOn(x, y, z, w) {
+		let count = getCount(x, y, z, w);
 		return count === 3; // turns on if count is 3
 	}
 	
@@ -53,27 +55,24 @@ fs.readFile('Day17.txt', 'utf8', function (err, data) {
 		iterations = 0;
 
 	while (iterations < 6) {
-		for (let z = cubeZLower; z <= cubeZUpper; z++) {
-			for (let y = cubeZLower; y <= cubeZUpper; y++ ) {
-				let row = '';
-				for (let x = cubeZLower; x <= cubeZUpper; x++) {
-					// console.log({x, y, z});
-					if (startingCube.get(`x${x}y${y}z${z}`) === "#") {
-						let toggle = isShuttingOff(x,y,z);
-						// console.log("isShuttingOff", toggle);
-						newCube.set(`x${x}y${y}z${z}`, toggle ? '.' : '#');
+		for (let w = cubeZLower; w <= cubeZUpper; w++) {
+			for (let z = cubeZLower; z <= cubeZUpper; z++) {
+				for (let y = cubeZLower; y <= cubeZUpper; y++ ) {
+					let row = '';
+					for (let x = cubeZLower; x <= cubeZUpper; x++) {
+						if (startingCube.get(`x${x}y${y}z${z}w${w}`) === "#") {
+							let toggle = isShuttingOff(x,y,z,w);
+							newCube.set(`x${x}y${y}z${z}w${w}`, toggle ? '.' : '#');
+						}
+						else {
+							let toggle = isTurningOn(x,y,z,w)
+							newCube.set(`x${x}y${y}z${z}w${w}`, toggle ? '#' : '.');
+						}
+						row += newCube.get(`x${x}y${y}z${z}w${w}`);
 					}
-					else {
-						let toggle = isTurningOn(x,y,z)
-						// console.log("isTurrningOn", toggle);
-						newCube.set(`x${x}y${y}z${z}`, toggle ? '#' : '.');
-					}
-					row += newCube.get(`x${x}y${y}z${z}`);
 				}
-				// console.log(row);
+	
 			}
-
-			// console.log();
 		}
 
 		for (let [key, val] of newCube.entries()) {
@@ -84,12 +83,10 @@ fs.readFile('Day17.txt', 'utf8', function (err, data) {
 		cubeZUpper++;
 	}
 
-	// console.log(startingCube);
-
 	let onTotal = 0;
 	startingCube.forEach(point => {
 		if (point === '#') onTotal++;
 	});
 
-	console.log("P1:", onTotal);
+	console.log("P2:", onTotal);
 });
