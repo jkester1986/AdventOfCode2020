@@ -71,7 +71,7 @@ function getMaskedMem(slot, maskBase) {
 	// replace the character at the same index with that maskBase char
 	for (let i = 2; i < 38; i++) {
 		if (maskBase[i] !== '0') {
-			slot = slot.substr(0, i) + maskBase[i] + slot.substr(i+1, length);
+			slot = slot.substr(0, i) + maskBase[i] + slot.substr(i+1); // was treating substr like slice....
 		}
 	}
 
