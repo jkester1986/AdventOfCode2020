@@ -42,35 +42,26 @@ fs.readFile('Day13.txt', 'utf8', function (err, data) {
 		timeInc++;
 	});
 
-	console.log(timeStructure);
-	// gives something that looks like this:
-	// [
-	// 	{ busId: 17, timeInc: 0 },
-	// 	{ busId: 13, timeInc: 2 },
-	// 	{ busId: 19, timeInc: 3 }
-	// ]
+	let startTime = 0,
+		multiplier = 1;
 
-	// start at 0 bc this should work from any point, but for my personal input I'll use 100000000000000 instead of 0
-	let startingTime = 0 - (0 % timeStructure[0].busId) + timeStructure[0].busId;
-	
-	let index = 0,
-		structLength = timeStructure.length,
-		increaseAmount = timeStructure[0].busId,
-		newStartTime = startingTime;
-
-	while (index < structLength) {
-		console.log(index);
-		let multiplier = 1;
-		while(!((newStartTime + timeStructure[index].timeInc) % timeStructure[index].busId === 0)) {
-			newStartTime += increaseAmount;
-			multiplier++;
+	/**
+	 * thanks to @lizthegrey for explaining this
+	 * @link https://www.youtube.com/watch?v=z5hR01EmgtM&list=PLI84-gNHkUdsnC-xEoEil8zTYEIqgx7-Q&index=13
+	 */
+	timeStructure.forEach(bus => {
+		const { busId, timeInc } = bus;
+		// while the bus doesn't leave at the specified time
+		// (t = startTime + increase in time for any particular bus)
+		while((startTime + timeInc) % busId) {
+			// increase the time by the multiplier,
+			// so any new start time works with all previous busses we've solved for,
+			// and keep doing until we find a match for the current bus
+			startTime += multiplier;
 		}
+		// increase the multiplier by the bus id
+		multiplier *= busId;
+	});
 
-		increaseAmount += multiplier;
-		startingTime = newStartTime;
-
-		index++;
-	}
-
-	console.log(startingTime);
+	console.log("P2:", startTime)
 });
