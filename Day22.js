@@ -28,10 +28,9 @@ fs.readFile('Day22.txt', 'utf8', function (err, data) {
 				let p1New = player1.slice(0, p1Turn),
 					p2New = player2.slice(0, p2Turn);
 
-				// don't need the result here, since the player hands have already been modified
-				recursiveCombat(p1New, p2New);
+				let winner = recursiveCombat(p1New, p2New).winner;
 
-				if (p1New.length > p2New.length) {
+				if (winner === "player1") {
 					player1.push(p1Turn);
 					player1.push(p2Turn);
 				}
@@ -60,15 +59,18 @@ fs.readFile('Day22.txt', 'utf8', function (err, data) {
 			// Otherwise add the latest set
 			let newSet = `p1:${player1.join(' ')} p2:${player2.join(' ')}`;
 			if (cardConfigs.has(newSet)) { // card setup already exists, player 1 wins
-				return player1;
+				return { winningHand: player1, winner: "player1"};
 			}
 			cardConfigs.add(newSet);
 		}
 
-		return player1.length > player2.length ? player1 : player2;
+		return {
+			winningHand: player1.length > player2.length ? player1 : player2,
+			winner: player1.length > player2.length ? "player1" : "player2"
+		};
 	}
 
-	let winner = recursiveCombat(player1Cards, player2Cards),
+	let winner = recursiveCombat(player1Cards, player2Cards).winningHand,
 		length = winner.length,
 		halfLength = Math.floor(winner.length/2);
 
