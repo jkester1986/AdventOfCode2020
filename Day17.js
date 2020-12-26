@@ -58,7 +58,6 @@ fs.readFile('Day17.txt', 'utf8', function (err, data) {
 		for (let w = cubeZLower; w <= cubeZUpper; w++) {
 			for (let z = cubeZLower; z <= cubeZUpper; z++) {
 				for (let y = cubeZLower; y <= cubeZUpper; y++ ) {
-					let row = '';
 					for (let x = cubeZLower; x <= cubeZUpper; x++) {
 						if (startingCube.get(`x${x}y${y}z${z}w${w}`) === "#") {
 							let toggle = isShuttingOff(x,y,z,w);
@@ -68,7 +67,6 @@ fs.readFile('Day17.txt', 'utf8', function (err, data) {
 							let toggle = isTurningOn(x,y,z,w)
 							newCube.set(`x${x}y${y}z${z}w${w}`, toggle ? '#' : '.');
 						}
-						row += newCube.get(`x${x}y${y}z${z}w${w}`);
 					}
 				}
 	
